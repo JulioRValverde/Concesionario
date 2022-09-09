@@ -5,13 +5,19 @@ namespace App\Http\Livewire\Negocio;
 use Livewire\Component;
 use App\Models\Vehiculo;
 use App\Models\User;
+use Livewire\WithPagination;
 
 class VehiculoIndex extends Component
 {
+    use WithPagination;
+
+    protected $paginationTheme = 'bootstrap';
     
     public Vehiculo $vehiculo;
 
     public $toEdit;
+
+    public $buscar = '';
 
     public $isEmpleado;
 
@@ -86,7 +92,11 @@ class VehiculoIndex extends Component
         $propietarios = null;
         if($user->hasRole('Tecnico') || $user->hasRole('Administrador'))
         {
-            $vehiculos = Vehiculo::get();
+            $vehiculos = Vehiculo::where('placa','like','%'.$this->buscar.'%')
+            ->orWhere('modelo','like','%'.$this->buscar.'%')
+            ->orWhere('estilo','like','%'.$this->buscar.'%')
+            ->orWhere('marca','like','%'.$this->buscar.'%')
+            ->paginate(10);
             $this->isEmpleado = true;
             $propietarios = User::orderBy('first_name')->get();
 
@@ -97,7 +107,13 @@ class VehiculoIndex extends Component
         }
         else
         {
-            $vehiculos = $user->vehiculos;
+            $vehiculos = $user->vehiculos()->where(function ($query) {
+                $query->where('placa','like','%'.$this->buscar.'%')
+                ->orWhere('modelo','like','%'.$this->buscar.'%')
+                ->orWhere('estilo','like','%'.$this->buscar.'%')
+                ->orWhere('marca','like','%'.$this->buscar.'%');
+             })->paginate(10);
+            
 
             $this->isEmpleado = false;
         }   
