@@ -66,10 +66,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/transactions', Transactions::class)->name('transactions');
     Route::get('/bootstrap-tables', BootstrapTables::class)->name('bootstrap-tables');
     Route::get('/lock', Lock::class)->name('lock');
-    Route::get('/sedes', SedeIndex::class)->name('sedes');
-    Route::get('/areas', AreaIndex::class)->name('areas');
-    Route::get('/puestos-de-trabajo', PuestoTrabajoIndex::class)->name('puestos-trabajo');
-    Route::get('/usuarios', UsuarioIndex::class)->name('usuarios');
+    Route::middleware('admin')->group(function () {
+        Route::get('/usuarios', UsuarioIndex::class)->name('usuarios');
+        Route::get('/sedes', SedeIndex::class)->name('sedes');
+        Route::get('/areas', AreaIndex::class)->name('areas');
+        Route::get('/puestos-de-trabajo', PuestoTrabajoIndex::class)->name('puestos-trabajo');
+    });
+    
     Route::get('/vehiculos', VehiculoIndex::class)->name('vehiculos');
     Route::get('/agendar-cita/{vehiculo}', AgendaCita::class)->name('agendar-cita');
     Route::get('/citas', CitaIndex::class)->name('citas');
